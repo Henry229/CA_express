@@ -17,16 +17,20 @@ app.use(express.json()); // 모든 아웃풋을 json format으로 바꿔준다.
 app.get('/', (req, res) => res.send({ info: 'Journal API' }));
 app.get('/categories', (req, res) => res.send(categories));
 app.get('/entries', (req, res) => res.send(entries));
+app.get('/entries/:id', (req, res) => {
+  const entry = entries[req.params.id];
+  entry && entry ? res.send(entry) : res.status(404).send('Entry not found');
+});
 
 app.post('/entries', (req, res) => {
   // 1. Create a new entry object with values passed in from the request
   const { category, content } = req.body;
   // Validation and sanitize
   const newEntry = { category, content };
-  res.send(newEntry);
-  // console.log(newEntry);
   // 2. Push the new entry to the entries array
+  entries.push(newEntry);
   // 3. Send the new entry with 201 status
+  res.status(201).send(newEntry);
 });
 
 app.listen(port, () => console.log(`App running at http://localhost:${port}/`));
